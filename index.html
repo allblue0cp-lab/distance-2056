@@ -19,10 +19,74 @@ button{appearance:none;border:0;cursor:pointer;font:inherit;color:#111;backgroun
 .choice:hover{background:#e5e5e5;transform:scale(1.02)}
 .hidden{display:none!important}
 .back{position:fixed;top:24px;left:24px;width:52px;height:52px;border-radius:50%;background:#eee;font-size:25px;line-height:1}
-.audio-screen,.text-screen{width:100%;min-height:78vh;display:flex;flex-direction:column;align-items:center;justify-content:center}
-.audio-wrap{display:flex;align-items:center;justify-content:center;width:100%}
-.audio-wrap audio{width:min(620px,90vw);height:74px}
-.audio-label{margin-top:24px;font-size:14px;color:#555;letter-spacing:.04em}
+
+/*「耳で聴く」画面のスタイルシート（CSS) */
+.audio-screen{
+  position:relative;
+  width:100%;
+  min-height:78vh;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+}
+.text-screen{
+  width:100%;
+  min-height:78vh;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+}
+/* 画面中央の大きな再生ボタン */
+.big-play{
+  position:absolute;
+  left:50%;
+  top:50%;
+  transform:translate(-50%,-50%);
+  width:220px;
+  height:220px;
+  padding:0;
+  border:0;
+  background:transparent;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  cursor:pointer;
+}
+/* グレーの三角形 */
+.big-play::before{
+  content:"";
+  width:0;
+  height:0;
+  border-top:62px solid transparent;
+  border-bottom:62px solid transparent;
+  border-left:100px solid #888;
+  margin-left:18px;
+}
+/* 元の音声プレイヤー */
+.audio-wrap{
+  position:absolute;
+  left:50%;
+  top:calc(50% + 160px);
+  transform:translateX(-50%);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  width:100%;
+}
+.audio-wrap audio{
+  width:min(620px,90vw);
+  height:74px;
+}
+.audio-label{
+  position:absolute;
+  top:calc(50% + 250px);
+  margin:0;
+  font-size:14px;
+  color:#555;
+  letter-spacing:.04em;
+}
 .text-screen{align-items:stretch;justify-content:flex-start;padding:7vh clamp(24px,7vw,90px) 12vh;overflow:visible}
 .transcript{width:min(900px,100%);margin:0 auto;font-size:clamp(17px,2vw,22px);line-height:2.0;letter-spacing:.025em;white-space:pre-wrap;overflow-wrap:anywhere}
 @media(max-width:600px){
@@ -50,6 +114,8 @@ button{appearance:none;border:0;cursor:pointer;font:inherit;color:#111;backgroun
   <section id="audio" class="screen hidden">
     <button class="back" type="button" onclick="showScreen('home')" aria-label="戻る">←</button>
     <div class="audio-screen">
+      /*大きな再生ボタン*/
+      <button id="bigPlayButton" class="big-play" type="button" aria-label="音楽を再生"></button>
       <div class="audio-wrap">
         <audio id="player" controls preload="metadata" src="260811_0254_1-2_TEST001.mp3"></audio>
       </div>
@@ -67,6 +133,20 @@ button{appearance:none;border:0;cursor:pointer;font:inherit;color:#111;backgroun
 
 <script>
 const screens = ['home','audio','text'];
+const bigPlayButton = document.getElementById('bigPlayButton');
+const audioPlayer = document.getElementById('player')
+
+bigPlayButton.addEventListener('click', async() => {
+  if(audioPlayer.paused){
+    try{
+      await audioPlayer.play();
+    } catch(error){
+      console.error('音声を再生できませんでした。', error);
+    }
+  } else {
+    audioPlayer.pause();
+  }
+});
 function showScreen(name){
   screens.forEach(id => document.getElementById(id).classList.toggle('hidden', id !== name));
   const player = document.getElementById('player');

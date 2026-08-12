@@ -155,12 +155,12 @@ function showScreen(name){
 async function loadTranscript(){
   const target = document.getElementById('transcript');
   try{
-    const response = await fetch('exhibition_text.txt', {cache:'no-store'});
+    const response = await fetch('distancetxt2056.txt', {cache:'no-store'});
     if(!response.ok) throw new Error('TXT file could not be loaded');
     const text = await response.text();
     target.textContent = text;
   }catch(error){
-    target.textContent = '文字データを読み込めませんでした。\n\n「exhibition_text.txt」がindex.htmlと同じフォルダにあるか確認してください。';
+    target.textContent = '文字データを読み込めませんでした。\n\n「distancetxt2056.txt」がindex.htmlと同じフォルダにあるか確認してください。';
   }
 }
 loadTranscript();

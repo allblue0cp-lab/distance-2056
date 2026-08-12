@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#ffffff">
+<title>distance:2056</title>
+<style>
+*{box-sizing:border-box}
+html,body{margin:0;width:100%;min-height:100%;background:#fff;color:#111;
+  font-family:"Helvetica Neue","Hiragino Kaku Gothic ProN","Hiragino Sans","Yu Gothic",Arial,sans-serif}
+body{min-height:100vh}
+main{width:100%;min-height:100vh;display:flex;align-items:center;justify-content:center;padding:40px 24px}
+.screen{width:min(900px,100%);min-height:70vh;display:flex;flex-direction:column;align-items:center;justify-content:center}
+h1{margin:0 0 48px;font-size:32px;line-height:1;font-weight:400;letter-spacing:.04em}
+.choices{display:flex;justify-content:center;align-items:center;gap:40px}
+button{appearance:none;border:0;cursor:pointer;font:inherit;color:#111;background:rgba(235,235,235,.78)}
+.choice{width:160px;height:160px;border-radius:50%;font-size:16px;letter-spacing:.05em;transition:background .2s,transform .2s}
+.choice:hover{background:#e5e5e5;transform:scale(1.02)}
+.hidden{display:none!important}
+.back{position:fixed;top:24px;left:24px;width:52px;height:52px;border-radius:50%;background:#eee;font-size:25px;line-height:1}
+.audio-screen,.text-screen{width:100%;min-height:78vh;display:flex;flex-direction:column;align-items:center;justify-content:center}
+.audio-wrap{display:flex;align-items:center;justify-content:center;width:100%}
+.audio-wrap audio{width:min(620px,90vw);height:74px}
+.audio-label{margin-top:24px;font-size:14px;color:#555;letter-spacing:.04em}
+.text-screen{align-items:stretch;justify-content:flex-start;padding:7vh clamp(24px,7vw,90px) 12vh;overflow:visible}
+.transcript{width:min(900px,100%);margin:0 auto;font-size:clamp(17px,2vw,22px);line-height:2.0;letter-spacing:.025em;white-space:pre-wrap;overflow-wrap:anywhere}
+@media(max-width:600px){
+  main{padding:24px 18px}
+  h1{font-size:26px;margin-bottom:34px}
+  .choices{gap:20px}
+  .choice{width:130px;height:130px;font-size:14px}
+  .back{top:16px;left:16px;width:46px;height:46px}
+  .audio-wrap audio{height:68px;width:92vw}
+  .text-screen{padding:70px 24px 80px}
+  .transcript{font-size:17px;line-height:2}
+}
+</style>
+</head>
+<body>
+<main>
+  <section id="home" class="screen">
+    <h1>distance:2056</h1>
+    <div class="choices">
+      <button class="choice" type="button" onclick="showScreen('audio')">耳で聴く</button>
+      <button class="choice" type="button" onclick="showScreen('text')">文字で聴く</button>
+    </div>
+  </section>
+
+  <section id="audio" class="screen hidden">
+    <button class="back" type="button" onclick="showScreen('home')" aria-label="戻る">←</button>
+    <div class="audio-screen">
+      <div class="audio-wrap">
+        <audio id="player" controls preload="metadata" src="260811_0254_1-2_TEST001.mp3"></audio>
+      </div>
+      <div class="audio-label">再生ボタンを押して音声を聴く</div>
+    </div>
+  </section>
+
+  <section id="text" class="screen hidden">
+    <button class="back" type="button" onclick="showScreen('home')" aria-label="戻る">←</button>
+    <div class="text-screen">
+      <div id="transcript" class="transcript">文字データを読み込んでいます……</div>
+    </div>
+  </section>
+</main>
+
+<script>
+const screens = ['home','audio','text'];
+function showScreen(name){
+  screens.forEach(id => document.getElementById(id).classList.toggle('hidden', id !== name));
+  const player = document.getElementById('player');
+  if(name !== 'audio') player.pause();
+  window.scrollTo(0,0);
+}
+async function loadTranscript(){
+  const target = document.getElementById('transcript');
+  try{
+    const response = await fetch('exhibition_text.txt', {cache:'no-store'});
+    if(!response.ok) throw new Error('TXT file could not be loaded');
+    const text = await response.text();
+    target.textContent = text;
+  }catch(error){
+    target.textContent = '文字データを読み込めませんでした。\n\n「exhibition_text.txt」がindex.htmlと同じフォルダにあるか確認してください。';
+  }
+}
+loadTranscript();
+</script>
+</body>
+</html>
